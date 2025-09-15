@@ -1,0 +1,81 @@
+import React, { useState } from "react";
+import Navbar from "../shared/Navbar";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
+import { COMPANY_API_ENDPOINT } from "../../utils/constants";
+import { Type } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setSingleCompany } from "../../redux/companySlice";
+import { toast } from "sonner";
+import axios from "axios";
+
+const CreateCompany = () => {
+  const [companyName, setCompanyName] = useState();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const registerNewCompany = async () => {
+    try {
+      const res = await axios.post(
+        `${COMPANY_API_ENDPOINT}/register`,
+        {
+          companyName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res?.data?.success) {
+        console.log(res?.data);
+        dispatch(setSingleCompany(res?.data?.company));
+        toast.success(res.data.message);
+        const companyId = res?.data?.company?._id;
+        navigate(`/admin/companies/${companyId}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <div>
+      <Navbar />
+      <div className="max-w-4xl mx-auto">
+        <div className="my-10">
+          <h1 className="font-bold text-2xl">Your company name</h1>
+          <p className="text-gray-400 ">
+            Company name (you can change this later)
+          </p>
+        </div>
+        <Label>Company name</Label>
+        <Input
+          onChange={(e) => {
+            setCompanyName(e.target.value);
+          }}
+          type="text"
+          className="my-2"
+          placeholder="Jobhunt microsoft, etc. "
+        />
+        <div className="flex item-center gap-2 my-10">
+          <Button
+            className="cursor-pointer"
+            variant="outline"
+            onClick={() => {
+              navigate("/admin/companies");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button className="cursor-pointer" onClick={registerNewCompany}>
+            Continue
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CreateCompany;
