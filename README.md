@@ -1,0 +1,1 @@
+this is a job search web application built using MERN stack. I used React, shadcnui and framer motion to style and create the frontend. In the backend I used mongoDB cloud for data storage and cloudinary for media storage.
